@@ -50,6 +50,7 @@ import {
 } from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TUTORIAL_STEPS } from '../constants/Tutorial';
+import { DEV_SKIP_TUTORIAL } from '../constants/DevConfig';
 
 /** Race a promise against a timeout. Rejects if the promise doesn't resolve in time. */
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
@@ -110,6 +111,22 @@ function applyBudgetSpend(budgetData: BudgetItem[], txns: Transaction[]) {
   };
 }
 
+export interface FeatureToggles {
+  dailyQuests: boolean;
+  summaryCards: boolean;
+  budgetDashboard: boolean;
+  insights: boolean;
+}
+
+const DEFAULT_FEATURE_TOGGLES: FeatureToggles = {
+  dailyQuests: false,
+  summaryCards: false,
+  budgetDashboard: false,
+  insights: false,
+};
+
+const FEATURE_TOGGLES_KEY = 'scotty_feature_toggles';
+
 interface AppState {
   // User data
   profile: UserProfile;
@@ -155,6 +172,10 @@ interface AppState {
     active: boolean;
     step: number;
   };
+
+  // Feature toggles
+  featureToggles: FeatureToggles;
+  setFeatureToggle: (key: keyof FeatureToggles, value: boolean) => void;
 
   // Actions
   feedScotty: (type: FoodType) => void;
@@ -261,11 +282,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [tutorialActive, setTutorialActive] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
   const [chatActions, setChatActions] = useState<ChatAction[]>([]);
+  const [featureToggles, setFeatureToggles] = useState<FeatureToggles>(DEFAULT_FEATURE_TOGGLES);
+
+  // Load persisted feature toggles on mount
+  useEffect(() => {
+    AsyncStorage.getItem(FEATURE_TOGGLES_KEY)
+      .then((raw) => {
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            setFeatureToggles((prev) => ({ ...prev, ...parsed }));
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const setFeatureToggle = useCallback((key: keyof FeatureToggles, value: boolean) => {
+    setFeatureToggles((prev) => {
+      const next = { ...prev, [key]: value };
+      AsyncStorage.setItem(FEATURE_TOGGLES_KEY, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       id: 'welcome',
       role: 'scotty',
-      content: "Woof! I'm Scotty, your financial buddy! Ask me anything about your spending!",
+      content: "Meow! I'm Wynter, your financial buddy! Ask me anything about your spending!",
       timestamp: new Date(),
     },
   ]);
@@ -306,6 +351,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let isMounted = true;
+
+    if (DEV_SKIP_TUTORIAL) {
+      setTutorialActive(false);
+      setTutorialStep(0);
+      return () => { isMounted = false; };
+    }
 
     AsyncStorage.getItem(TUTORIAL_STORAGE_KEY)
       .then((value) => {
@@ -577,7 +628,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const errorMessage: ChatMessage = {
         id: `scotty_${Date.now()}`,
         role: 'scotty',
-        content: "Woof! I had trouble understanding that. Can you try again?",
+        content: "Mew! I had trouble understanding that. Can you try again?",
         timestamp: new Date(),
       };
       setChatMessages((prev) => [...prev, errorMessage]);
@@ -619,7 +670,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // Keep existing goals
     }
 
-    setPendingGoalNotification('Scotty is building quests for your goal...');
+    setPendingGoalNotification('Wynter is building quests for your goal...');
     await new Promise((resolve) => setTimeout(resolve, 3000));
     await Promise.all([refreshQuests(), refreshBudgets()]);
     setPendingGoalNotification('New quests added!');
@@ -748,6 +799,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         chatMessages,
         chatActions,
         backendConnected,
+        featureToggles,
+        setFeatureToggle,
         onboarding: { agreedToPact: onboardingAgreed },
         tutorial: { active: tutorialActive, step: tutorialStep },
         feedScotty,

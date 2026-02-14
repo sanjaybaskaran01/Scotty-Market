@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -70,8 +71,8 @@ function Heart({
 
   const animatedStyle = useAnimatedStyle(() => ({
     position: 'absolute',
-    left: x - 8,
-    top: y - 8,
+    left: x - 10,
+    top: y - 10,
     transform: [
       { translateX: translateX.value },
       { translateY: translateY.value },
@@ -80,7 +81,11 @@ function Heart({
     opacity: opacity.value,
   }));
 
-  return <Animated.Text style={[styles.heart, animatedStyle]}>❤️</Animated.Text>;
+  return (
+    <Animated.View style={animatedStyle}>
+      <MaterialCommunityIcons name="heart" size={20} color="#ff6b6b" />
+    </Animated.View>
+  );
 }
 
 export default function HeartBurst({ x, y, onFinish }: HeartBurstProps) {
@@ -102,9 +107,3 @@ export default function HeartBurst({ x, y, onFinish }: HeartBurstProps) {
 
   return <>{hearts}</>;
 }
-
-const styles = StyleSheet.create({
-  heart: {
-    fontSize: 16,
-  },
-});

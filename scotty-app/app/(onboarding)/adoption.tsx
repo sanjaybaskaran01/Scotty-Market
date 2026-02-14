@@ -14,7 +14,7 @@ import { useRouter } from 'expo-router';
 import Scotty from '@/components/Scotty';
 import { Colors, Shadows } from '@/constants/Theme';
 
-const DEFAULT_NAME = 'Scotty';
+const DEFAULT_NAME = 'Wynter';
 
 export default function AdoptionScreen() {
   const router = useRouter();
@@ -75,7 +75,7 @@ export default function AdoptionScreen() {
         <View style={styles.container}>
           <View style={styles.headerBlock}>
             <Text style={styles.kicker}>Adoption Center</Text>
-            <Text style={styles.title}>This puppy's health depends on your wallet.</Text>
+            <Text style={styles.title}>Ananya, this kitty's health depends on your wallet.</Text>
           </View>
 
           <View style={styles.boxStage}>
@@ -91,12 +91,12 @@ export default function AdoptionScreen() {
               </Animated.View>
               {showWoof && (
                 <View style={styles.woofBubble}>
-                  <Text style={styles.woofText}>Woof!</Text>
+                  <Text style={styles.woofText}>Meow!</Text>
                 </View>
               )}
               <View style={styles.boxTop} />
               <View style={styles.boxFront}>
-                <Text style={styles.boxLabel}>Scotty</Text>
+                <Text style={styles.boxLabel}>Wynter</Text>
               </View>
           </View>
 

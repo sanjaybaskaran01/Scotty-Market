@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { FoodType } from '../types';
 import { Colors, Shadows } from '../constants/Theme';
+import ScottyIcon from '../constants/Icons';
 
 interface FoodButtonProps {
   type: FoodType;
@@ -11,11 +12,6 @@ interface FoodButtonProps {
   disabled?: boolean;
   onPress: () => void;
 }
-
-const FOOD_ICONS: Record<FoodType, string> = {
-  treat: '🦴',
-  meal: '🍖',
-};
 
 export function FoodButton({
   type,
@@ -39,14 +35,19 @@ export function FoodButton({
       disabled={isDisabled}
       activeOpacity={0.8}
     >
-      <Text style={styles.icon}>{FOOD_ICONS[type]}</Text>
+      <View style={styles.iconContainer}>
+        <ScottyIcon name={type === 'meal' ? 'meat' : 'bone'} size={32} color={Colors.ink} />
+      </View>
       <Text style={[styles.name, isDisabled && styles.disabledText]}>
         {name}
       </Text>
       <View style={[styles.costBadge, !canAfford && styles.insufficientBadge]}>
-        <Text style={[styles.cost, !canAfford && styles.insufficientText]}>
-          {cost} 🪙
-        </Text>
+        <View style={styles.costRow}>
+          <Text style={[styles.cost, !canAfford && styles.insufficientText]}>
+            {cost}{' '}
+          </Text>
+          <ScottyIcon name="coin" size={14} color={!canAfford ? Colors.coral : Colors.ink} />
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -63,7 +64,10 @@ export function FoodSelector({ credits, onFeed, disabled }: FoodSelectorProps) {
     <View style={styles.container}>
       <View style={styles.creditsCard}>
         <Text style={styles.creditsLabel}>YOUR CREDITS</Text>
-        <Text style={styles.creditsValue}>{credits} 🪙</Text>
+        <View style={styles.creditsValueRow}>
+          <Text style={styles.creditsValue}>{credits} </Text>
+          <ScottyIcon name="coin" size={20} color={Colors.coral} />
+        </View>
       </View>
       <View style={styles.buttonsRow}>
         <FoodButton
@@ -119,6 +123,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.coral,
   },
+  creditsValueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   buttonsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -146,8 +154,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.paperDark,
     opacity: 0.5,
   },
-  icon: {
-    fontSize: 32,
+  iconContainer: {
     marginBottom: 8,
   },
   name: {
@@ -177,6 +184,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: Colors.ink,
+  },
+  costRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   insufficientText: {
     color: Colors.coral,

@@ -7,7 +7,7 @@ import Scotty from '@/components/Scotty';
 import { useApp } from '@/context/AppContext';
 import { Colors, Shadows } from '@/constants/Theme';
 
-const SCOTTY_NAME = 'Scotty';
+const SCOTTY_NAME = 'Wynter';
 
 export default function AgreementScreen() {
   const router = useRouter();
@@ -31,7 +31,7 @@ export default function AgreementScreen() {
             <View style={styles.speechBubble}>
               <Text style={styles.speechText}>
                 Good habits (saving, budgeting) = treats and growth. Bad habits
-                (overspending, fees) = a sick pup.
+                (overspending, fees) = a sick kitty.
               </Text>
             </View>
           </View>
@@ -39,8 +39,8 @@ export default function AgreementScreen() {
           <View style={styles.card}>
             <Text style={styles.cardTitle}>The pact</Text>
             <Text style={styles.cardText}>
-              You are in charge of {SCOTTY_NAME}'s health. Keep his wallet clean,
-              and he stays happy and strong.
+              You are in charge of {SCOTTY_NAME}'s health. Keep her wallet clean,
+              and she stays happy and strong.
             </Text>
             <TouchableOpacity
               style={[styles.primaryButton, confirmed && styles.primaryButtonConfirmed]}
@@ -52,7 +52,7 @@ export default function AgreementScreen() {
               }}
               activeOpacity={0.85}
             >
-              <Text style={styles.primaryButtonText}>I promise to take care of him</Text>
+              <Text style={styles.primaryButtonText}>I promise to take care of her</Text>
             </TouchableOpacity>
           </View>
         </View>

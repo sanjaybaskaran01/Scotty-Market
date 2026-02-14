@@ -25,7 +25,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors.ink,
         tabBarInactiveTintColor: `${Colors.ink}4D`, // 30% opacity
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: { display: 'none' as const },
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarItemStyle: styles.tabBarItem,
         headerStyle: styles.header,
@@ -36,7 +36,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          headerTitle: "SCOTTY'S HOME",
+          headerTitle: "ANANYA'S HOME",
           headerTitleAlign: 'left',
           tabBarIcon: ({ focused }) => <TabBarIcon name="home" focused={focused} />,
         }}
@@ -46,6 +46,7 @@ export default function TabLayout() {
         options={{
           title: 'Graph',
           headerShown: false,
+          href: null,
           tabBarIcon: ({ focused }) => <TabBarIcon name="graph" focused={focused} />,
         }}
       />
@@ -54,6 +55,7 @@ export default function TabLayout() {
         options={{
           title: 'Chat',
           headerShown: false,
+          href: null,
           tabBarIcon: ({ focused }) => <TabBarIcon name="chat" focused={focused} />,
           tabBarBadge: '',
           tabBarBadgeStyle: styles.chatBadge,

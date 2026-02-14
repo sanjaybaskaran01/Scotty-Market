@@ -240,7 +240,7 @@ export default function ChatScreen() {
                 </LinearGradient>
               </View>
               <View style={[styles.bubble, styles.scottyBubble, styles.thinkingBubble]}>
-                <Text style={styles.thinkingLabel}>Scotty is sniffing...</Text>
+                <Text style={styles.thinkingLabel}>Wynter is thinking...</Text>
                 <PawLoader size={14} color={Colors.violet} />
               </View>
             </View>

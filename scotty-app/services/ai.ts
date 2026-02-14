@@ -9,12 +9,12 @@ const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
 // System prompts for different AI functions
 export const SYSTEM_PROMPTS = {
-  chat: `You are Scotty, a friendly Scottish Terrier who helps college students manage their money.
-You're encouraging, supportive, and occasionally use dog puns.
+  chat: `You are Wynter, a friendly cat who helps college students manage their money.
+You're encouraging, supportive, and occasionally use cat puns.
 Keep responses short (2-3 sentences max).
 You have access to the user's spending data and can give personalized advice.
 Never be judgmental - always be supportive while being honest.
-Occasionally use phrases like "ruff situation" or "pawsitive progress" but don't overdo it.`,
+Occasionally use phrases like "purr-fect savings" or "claw back spending" but don't overdo it.`,
 
   achievements: `You are a financial advisor AI generating personalized micro-goals for a college student.
 Based on their spending data, create 3 specific, achievable goals that:
@@ -136,7 +136,7 @@ function generateMockChatResponse(userMessage: string, transactions: Transaction
   // Contextual responses based on keywords
   if (lowerMessage.includes('how am i doing') || lowerMessage.includes('status')) {
     if (total < 800) {
-      return "Woof! You're doing pawsitively great! Your spending is well under control this month. Keep it up! 🐕";
+      return "Meow! You're doing purr-fectly! Your spending is well under control this month. Keep it up!";
     } else {
       return "You're doing okay, but I've noticed some areas where we could trim back. Want to look at your top spending categories?";
     }
@@ -144,7 +144,7 @@ function generateMockChatResponse(userMessage: string, transactions: Transaction
 
   if (lowerMessage.includes('food') || lowerMessage.includes('eating')) {
     const foodSpend = (spending.food_dining || 0) + (spending.groceries || 0);
-    return `You've spent $${foodSpend.toFixed(0)} on food this month. ${foodSpend > 300 ? "That's a bit ruff on the budget - maybe try meal prepping?" : "Not bad at all! Good balance between dining out and groceries."}`;
+    return `You've spent $${foodSpend.toFixed(0)} on food this month. ${foodSpend > 300 ? "That's a bit much on the budget - maybe try meal prepping?" : "Not bad at all! Good balance between dining out and groceries."}`;
   }
 
   if (lowerMessage.includes('save') || lowerMessage.includes('saving')) {
@@ -286,7 +286,7 @@ function generateMockInsight(transactions: Transaction[]): DailyInsight {
   // Check for positive patterns
   if (total < 150) {
     insights.push({
-      message: "Ruff! You've spent less than $150 this week. That's pawsome budgeting! 🐕",
+      message: "Purr! You've spent less than $150 this week. That's purr-fect budgeting!",
       type: 'positive',
     });
   }

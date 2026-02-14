@@ -108,15 +108,15 @@ export function calculateDailyCredits(metrics: HealthMetrics): number {
 export function getStateInsight(metrics: HealthMetrics, mood: MoodState): string {
   const insights: Record<MoodState, string[]> = {
     happy: [
-      "Woof! You're doing amazing! Keep it up! 🐕",
+      "Meow! You're doing amazing! Keep it up!",
       "I'm so happy! Your budget is looking great!",
-      "*tail wagging intensifies* You're crushing it!",
+      "*purring intensifies* You're crushing it!",
       "Best. Human. Ever. Your savings are on point!",
     ],
     sad: [
       "I'm worried about you... Let's make a plan?",
       "Things are tough, but we can turn this around!",
-      "*whimper* Please check your spending...",
+      "*mew* Please check your spending...",
       "I'm here for you. Let's set some goals together.",
     ],
   };

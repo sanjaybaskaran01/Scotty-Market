@@ -13,7 +13,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import Scotty from '@/components/Scotty';
 import { Colors, Shadows } from '@/constants/Theme';
 
-const SCOTTY_NAME = 'Scotty';
+const SCOTTY_NAME = 'Wynter';
 
 export default function FirstFeedScreen() {
   const router = useRouter();
@@ -103,7 +103,7 @@ export default function FirstFeedScreen() {
 
           <View style={styles.footerCard}>
             <Text style={styles.footerTitle}>Great job!</Text>
-            <Text style={styles.footerText}>Come back tomorrow to keep him happy.</Text>
+            <Text style={styles.footerText}>Come back tomorrow to keep her happy.</Text>
             <TouchableOpacity
               style={styles.secondaryButton}
               onPress={() => router.replace('/(tabs)')}

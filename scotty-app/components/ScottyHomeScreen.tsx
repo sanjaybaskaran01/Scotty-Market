@@ -9,7 +9,6 @@ import {
   LayoutChangeEvent,
   Modal,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   useSharedValue,
@@ -30,6 +29,7 @@ import { BudgetItem, Quest, TransactionCategory, BudgetProjectionsResponse } fro
 import TutorialModal from './TutorialModal';
 import { TUTORIAL_STEPS } from '../constants/Tutorial';
 import { Colors, Shadows } from '../constants/Theme';
+import ScottyIcon, { IconName } from '../constants/Icons';
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -37,17 +37,17 @@ type BudgetTab = 'Daily' | 'Monthly' | 'Yearly';
 
 const BUDGET_TABS: BudgetTab[] = ['Daily', 'Monthly', 'Yearly'];
 
-const CATEGORY_EMOJI: Record<string, string> = {
-  'Food & Drink': '🍔',
-  Groceries: '🛒',
-  Transportation: '🚗',
-  Entertainment: '🎭',
-  Shopping: '🛍️',
-  Health: '💊',
-  Subscription: '💳',
-  Utilities: '💡',
-  Education: '📚',
-  Housing: '🏠',
+const CATEGORY_ICON: Record<string, IconName> = {
+  'Food & Drink': 'cat_food_drink',
+  Groceries: 'groceries',
+  Transportation: 'cat_transportation',
+  Entertainment: 'cat_entertainment',
+  Shopping: 'shopping',
+  Health: 'cat_health',
+  Subscription: 'cat_subscription',
+  Utilities: 'cat_utilities',
+  Education: 'cat_education',
+  Housing: 'cat_housing',
 };
 
 const CATEGORY_COLORS = ['#9b59b6', '#ff8a65', '#81d4fa', '#4caf50', '#ff6b6b'];
@@ -105,9 +105,13 @@ function QuestCard({ quest, index }: { quest: Quest; index: number }) {
     ]}>
       <View style={styles.goalHeader}>
         <View style={[styles.goalIcon, iconStyles[index]]}>
-          <Text style={styles.goalIconText}>
-            {isComplete ? '✅' : isFailed ? '❌' : quest.emoji}
-          </Text>
+          {isComplete ? (
+            <ScottyIcon name="check_circle" size={20} color="#4caf50" />
+          ) : isFailed ? (
+            <ScottyIcon name="close" size={20} color="#ff6b6b" />
+          ) : (
+            <Text style={styles.goalIconText}>{quest.emoji}</Text>
+          )}
         </View>
         <Text
           style={[
@@ -170,7 +174,6 @@ export default function ScottyHomeScreen({
   onCloseQuestsModal,
   onOpenQuestsModal,
 }: ScottyHomeScreenProps = {}) {
-  const router = useRouter();
   const {
     feedScotty,
     budgets,
@@ -182,9 +185,11 @@ export default function ScottyHomeScreen({
     dailyInsight,
     quests: contextQuests,
     goals,
+    featureToggles,
     tutorial,
     advanceTutorial,
     skipTutorial,
+    completeTutorial,
   } = useApp();
   const [activeBudgetTab, setActiveBudgetTab] = useState<BudgetTab>('Daily');
   const budgetPagerRef = useRef<ScrollView>(null);
@@ -262,7 +267,7 @@ export default function ScottyHomeScreen({
   const DEMO_QUEST: Quest = {
     id: 'demo_yesterday',
     title: 'Skip Starbucks',
-    subtitle: 'No Starbucks charges detected yesterday. Scotty verified your transactions!',
+    subtitle: 'No Starbucks charges detected yesterday. Wynter verified your transactions!',
     emoji: '☕',
     xpReward: 50,
     progress: 0,
@@ -421,7 +426,7 @@ export default function ScottyHomeScreen({
   const budgetsByTab = useMemo(() => {
     const byTab: Record<BudgetTab, Array<{
       id: string;
-      emoji: string;
+      icon: IconName;
       name: string;
       spent: number;
       limit: number;
@@ -456,7 +461,7 @@ export default function ScottyHomeScreen({
         Monthly: budget.spent,
         Yearly: budget.spent * 12,
       };
-      const emoji = CATEGORY_EMOJI[budget.category] || '📊';
+      const icon = CATEGORY_ICON[budget.category] || 'cat_default';
       const color = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
 
       // Look up AI projection for this category
@@ -490,7 +495,7 @@ export default function ScottyHomeScreen({
 
         byTab[tab].push({
           id: `${budget.id}-${tab}`,
-          emoji,
+          icon,
           name: budget.category,
           spent,
           limit,
@@ -507,9 +512,8 @@ export default function ScottyHomeScreen({
 
   const handleTutorialPrimary = () => {
     if (!currentStep) return;
-    if (currentStep.id === 'home-go-chat') {
-      advanceTutorial();
-      router.push('/(tabs)/chat');
+    if (currentStep.isFinal) {
+      completeTutorial();
       return;
     }
     advanceTutorial();
@@ -520,7 +524,7 @@ export default function ScottyHomeScreen({
       {/* Floating hint banner during interactive feed step */}
       {isWaitingForFeed && (
         <View style={styles.feedHintBanner}>
-          <Text style={styles.feedHintText}>🐾  Drag a treat onto Scotty!</Text>
+          <Text style={styles.feedHintText}>Drag a treat onto Wynter!</Text>
         </View>
       )}
       <ScrollView
@@ -534,17 +538,19 @@ export default function ScottyHomeScreen({
       >
         {/* Hero Section */}
         <View style={styles.heroSection}>
-          <View style={styles.speechBubble}>
-            <Text style={styles.speechText}>
-              {dailyInsight?.message
-                ? `"${dailyInsight.message}"`
-                : '"Woof! Loading your insights..."'}
-            </Text>
-            <View style={styles.speechTail} />
-          </View>
+          {featureToggles.insights && (
+            <View style={styles.speechBubble}>
+              <Text style={styles.speechText}>
+                {dailyInsight?.message
+                  ? `"${dailyInsight.message}"`
+                  : '"Meow! Loading your insights..."'}
+              </Text>
+              <View style={styles.speechTail} />
+            </View>
+          )}
 
           <View style={styles.heroContent}>
-            <View style={styles.dogContainer}>
+            <View style={styles.wynterContainer}>
               <View
                 ref={scottyRef}
                 style={styles.scottyWrapper}
@@ -556,21 +562,21 @@ export default function ScottyHomeScreen({
 
             <View style={styles.categoryIcons}>
               <DraggableFoodItem
-                emoji="🧋"
+                imageSource={require('../assets/images/food-boba.png')}
                 count={foodCounts.food}
                 bgColor="#FFD8B1"
                 scottyLayout={scottyLayout}
                 onFeed={() => handleFeed('food')}
               />
               <DraggableFoodItem
-                emoji="🥩"
+                imageSource={require('../assets/images/food-steak.png')}
                 count={foodCounts.coffee}
                 bgColor="#e1bee7"
                 scottyLayout={scottyLayout}
                 onFeed={() => handleFeed('coffee')}
               />
               <DraggableFoodItem
-                emoji="🍎"
+                imageSource={require('../assets/images/food-apple.png')}
                 count={foodCounts.pets}
                 bgColor="#c8e6c9"
                 scottyLayout={scottyLayout}
@@ -582,7 +588,7 @@ export default function ScottyHomeScreen({
           {/* Happiness Meter */}
           <View style={styles.happinessContainer}>
             <View style={styles.meterHeader}>
-              <Text style={styles.meterLabel}>SCOTTY HAPPINESS</Text>
+              <Text style={styles.meterLabel}>WYNTER HAPPINESS</Text>
               <Text style={styles.meterValue}>{Math.round(scottyState.happiness)}%</Text>
             </View>
             <View style={styles.meterContainer}>
@@ -597,57 +603,62 @@ export default function ScottyHomeScreen({
         </View>
 
         {/* Daily Quests Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionHeaderTitle}>DAILY QUESTS</Text>
-            <View style={styles.sectionHeaderButtons}>
-              <TouchableOpacity
-                style={styles.resyncButton}
-                onPress={handleResyncQuests}
-                disabled={isSyncing}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Text style={[styles.resyncText, isSyncing && styles.resyncTextDisabled]}>
-                  {isSyncing ? '...' : '↻ SYNC'}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.demoButton}
-                onPress={() => setShowDemoModal(true)}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Text style={styles.demoButtonText}>DEMO</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {dailyQuests.slice(0, 3).map((quest, index) => (
-            <QuestCard key={quest.id} quest={quest} index={index} />
-          ))}
-        </View>
-
-        {/* Summary Cards */}
-        <View style={styles.summaryRow}>
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryLabel}>DAILY SPEND</Text>
-            <View style={styles.dailySpendRingRow}>
-              <DailySpendRing spent={dailySpend} limit={totalDailyLimit} size={72} />
-              <View style={styles.dailySpendText}>
-                <Text style={styles.summaryValueMedium}>{formatCurrency(dailySpend)}</Text>
-                <Text style={styles.dailySpendLimit}>of {formatCurrency(totalDailyLimit)}</Text>
+        {featureToggles.dailyQuests && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionHeaderTitle}>DAILY QUESTS</Text>
+              <View style={styles.sectionHeaderButtons}>
+                <TouchableOpacity
+                  style={styles.resyncButton}
+                  onPress={handleResyncQuests}
+                  disabled={isSyncing}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Text style={[styles.resyncText, isSyncing && styles.resyncTextDisabled]}>
+                    {isSyncing ? '...' : '↻ SYNC'}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.demoButton}
+                  onPress={() => setShowDemoModal(true)}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Text style={styles.demoButtonText}>DEMO</Text>
+                </TouchableOpacity>
               </View>
             </View>
-          </View>
 
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryLabel}>BANK TOTAL</Text>
-            <Text style={[styles.summaryValueLarge, styles.summaryValuePurple]}>
-              {totalBalance > 0 ? formatCompact(totalBalance) : '$--'}
-            </Text>
+            {dailyQuests.slice(0, 3).map((quest, index) => (
+              <QuestCard key={quest.id} quest={quest} index={index} />
+            ))}
           </View>
-        </View>
+        )}
+
+        {/* Summary Cards */}
+        {featureToggles.summaryCards && (
+          <View style={styles.summaryRow}>
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>DAILY SPEND</Text>
+              <View style={styles.dailySpendRingRow}>
+                <DailySpendRing spent={dailySpend} limit={totalDailyLimit} size={72} />
+                <View style={styles.dailySpendText}>
+                  <Text style={styles.summaryValueMedium}>{formatCurrency(dailySpend)}</Text>
+                  <Text style={styles.dailySpendLimit}>of {formatCurrency(totalDailyLimit)}</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>BANK TOTAL</Text>
+              <Text style={[styles.summaryValueLarge, styles.summaryValuePurple]}>
+                {totalBalance > 0 ? formatCompact(totalBalance) : '$--'}
+              </Text>
+            </View>
+          </View>
+        )}
 
         {/* Budget Dashboard */}
+        {featureToggles.budgetDashboard && (
         <View style={styles.budgetSection}>
           <View style={styles.budgetHeader}>
             <Text style={styles.budgetTitle}>BUDGET DASHBOARD</Text>
@@ -698,7 +709,7 @@ export default function ScottyHomeScreen({
                     <View key={budget.id} style={styles.budgetCard}>
                       <View style={styles.budgetCategoryHeader}>
                         <View style={styles.budgetCategoryLeft}>
-                          <Text style={styles.budgetEmoji}>{budget.emoji}</Text>
+                          <ScottyIcon name={budget.icon} size={20} color="#000" />
                           <Text style={styles.budgetCategoryName}>{budget.name}</Text>
                         </View>
                         <Text style={styles.budgetCategoryAmount}>
@@ -736,6 +747,7 @@ export default function ScottyHomeScreen({
             ))}
           </ScrollView>
         </View>
+        )}
       </ScrollView>
 
       {/* Heart burst overlay (above ScrollView) */}
@@ -785,7 +797,10 @@ export default function ScottyHomeScreen({
               </View>
               <Text style={styles.demoQuestSubtitle}>{DEMO_QUEST.subtitle}</Text>
               <View style={styles.demoVerifiedBadge}>
-                <Text style={styles.demoVerifiedText}>✅ VERIFIED BY SCOTTY</Text>
+                <View style={styles.demoVerifiedRow}>
+                  <ScottyIcon name="check_circle" size={14} color="#4caf50" />
+                  <Text style={styles.demoVerifiedText}> VERIFIED BY WYNTER</Text>
+                </View>
               </View>
             </View>
 
@@ -793,10 +808,10 @@ export default function ScottyHomeScreen({
             <View style={styles.demoRewardSection}>
               <Text style={styles.demoRewardLabel}>REWARD EARNED</Text>
               <View style={styles.demoRewardRow}>
-                <Text style={styles.demoRewardEmoji}>🧋</Text>
+                <ScottyIcon name="food_beverage" size={28} color="#000" />
                 <Text style={styles.demoRewardName}>2x Boba Treats</Text>
               </View>
-              <Text style={styles.demoRewardHint}>Feed these to Scotty to boost happiness!</Text>
+              <Text style={styles.demoRewardHint}>Feed these to Wynter to boost happiness!</Text>
             </View>
 
             {/* Claim Button */}
@@ -964,7 +979,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
-  dogContainer: {
+  wynterContainer: {
     flex: 1,
     alignItems: 'center',
   },
@@ -1516,6 +1531,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     alignSelf: 'flex-start',
+  },
+  demoVerifiedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   demoVerifiedText: {
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',

@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Modal,
   Platform,
   StyleSheet,
   Text,
@@ -34,9 +33,12 @@ export default function TutorialModal({
   onSkip,
   extraContent,
 }: TutorialModalProps) {
+  if (!visible) return null;
+
   return (
-    <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.overlay}>
+    <View style={styles.overlay} pointerEvents="box-none">
+      <View style={styles.backdrop} />
+      <View style={styles.centerer} pointerEvents="box-none">
         <View style={styles.card}>
           <View style={styles.headerRow}>
             <Text style={styles.stepText}>Step {stepIndex + 1} of {totalSteps}</Text>
@@ -52,20 +54,28 @@ export default function TutorialModal({
           </TouchableOpacity>
         </View>
       </View>
-    </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   overlay: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1000,
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.45)',
+  },
+  centerer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
   },
   card: {
     width: '100%',
+    maxWidth: 360,
     backgroundColor: Colors.white,
     borderWidth: 2,
     borderColor: Colors.ink,

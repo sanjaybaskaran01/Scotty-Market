@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Platform } from 'react-native';
+import { StyleSheet, Text, View, Image, Platform, ImageSourcePropType } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -9,7 +9,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 interface DraggableFoodItemProps {
-  emoji: string;
+  emoji?: string;
+  imageSource?: ImageSourcePropType;
   count: number;
   bgColor: string;
   /** Scotty's position in absolute coords { x, y, width, height } */
@@ -22,6 +23,7 @@ const DROP_THRESHOLD = 80;
 
 export default function DraggableFoodItem({
   emoji,
+  imageSource,
   count,
   bgColor,
   scottyLayout,
@@ -80,7 +82,11 @@ export default function DraggableFoodItem({
           animatedStyle,
         ]}
       >
-        <Text style={styles.iconEmoji}>{emoji}</Text>
+        {imageSource ? (
+          <Image source={imageSource} style={styles.foodImage} />
+        ) : (
+          <Text style={styles.iconEmoji}>{emoji}</Text>
+        )}
         <View style={[styles.badge, disabled && styles.badgeDisabled]}>
           <Text style={styles.badgeText}>{count}x</Text>
         </View>
@@ -110,6 +116,10 @@ const styles = StyleSheet.create({
   },
   iconEmoji: {
     fontSize: 24,
+  },
+  foodImage: {
+    width: 32,
+    height: 32,
   },
   badge: {
     position: 'absolute',

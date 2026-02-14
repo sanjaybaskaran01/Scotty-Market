@@ -136,7 +136,7 @@ export function TransactionList({ transactions, limit }: TransactionListProps) {
             <Text style={[styles.filterIcon, styles.filterIconDisabled]}>🐾</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.searchHint}>"Sniffing out your spending patterns, human!"</Text>
+        <Text style={styles.searchHint}>"Pawing through your spending patterns, human!"</Text>
       </View>
 
       {/* Transaction Sections */}
