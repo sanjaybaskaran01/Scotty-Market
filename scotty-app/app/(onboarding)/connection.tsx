@@ -55,7 +55,7 @@ export default function ConnectionScreen() {
           <View style={styles.headerBlock}>
             <Text style={styles.kicker}>Connection</Text>
             <Text style={styles.title}>To feed {WYNTER_NAME}, we need your transactions.</Text>
-            <Text style={styles.subTitle}>Don't worry — she only purrs, never scratches.</Text>
+            <Text style={styles.subTitle}>Don't worry - she only purrs, never scratches (lying).</Text>
           </View>
 
           <View style={styles.centerStage}>

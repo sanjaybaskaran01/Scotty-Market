@@ -27,20 +27,24 @@ export default function Root({ children }: { children: React.ReactNode }) {
         {/* Open Graph / Social */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://ananyamy.love" />
-        <meta property="og:title" content="Wynter — Happy Valentine's Day, Ananya" />
+        <meta property="og:title" content="Happy Valentine's Day, Ananya" />
         <meta
           property="og:description"
           content="Meet Wynter, your personal finance kitty. A Valentine's Day gift built just for you."
         />
         <meta property="og:site_name" content="ananyamy.love" />
+        <meta property="og:image" content="https://ananyamy.love/thumbnail.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
 
         {/* Twitter / iMessage preview */}
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Wynter — Happy Valentine's Day, Ananya" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Happy Valentine's Day, Ananya" />
         <meta
           name="twitter:description"
           content="Meet Wynter, your personal finance kitty. A Valentine's Day gift built just for you."
         />
+        <meta name="twitter:image" content="https://ananyamy.love/thumbnail.png" />
 
         {/* PWA / Mobile Web */}
         <meta name="theme-color" content="#fff6f3" />

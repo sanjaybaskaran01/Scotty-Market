@@ -58,10 +58,10 @@ export default function DraggableFoodItem({
         }
       }
 
-      // Spring back
-      translateX.value = withSpring(0, { damping: 15 });
-      translateY.value = withSpring(0, { damping: 15 });
-      scale.value = withSpring(1, { damping: 15 });
+      // Smooth snap back — high damping prevents wobble
+      translateX.value = withSpring(0, { damping: 30, stiffness: 200 });
+      translateY.value = withSpring(0, { damping: 30, stiffness: 200 });
+      scale.value = withSpring(1, { damping: 25, stiffness: 180 });
     });
 
   const animatedStyle = useAnimatedStyle(() => ({

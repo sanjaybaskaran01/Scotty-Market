@@ -8,6 +8,7 @@ import {
   Platform,
   LayoutChangeEvent,
   Modal,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
@@ -31,7 +32,8 @@ import { TUTORIAL_STEPS } from '../constants/Tutorial';
 import { Colors, Shadows } from '../constants/Theme';
 import ScottyIcon, { IconName } from '../constants/Icons';
 
-const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
+// Wrap LinearGradient in an Animated.View for web compatibility
+// (Animated.createAnimatedComponent(LinearGradient) doesn't render on web)
 
 type BudgetTab = 'Daily' | 'Monthly' | 'Yearly';
 
@@ -277,18 +279,6 @@ export default function ScottyHomeScreen({
     status: 'completed',
   };
 
-  const handleClaimReward = useCallback(() => {
-    setDemoClaimed(true);
-    // Award food credits to Scotty
-    feedScotty('treat');
-    setFoodCounts((prev) => ({ ...prev, food: prev.food + 2 }));
-    setTimeout(() => {
-      setShowDemoModal(false);
-      // Reset for re-demo
-      setTimeout(() => setDemoClaimed(false), 500);
-    }, 1500);
-  }, [feedScotty]);
-
   // Scotty position for drop-zone detection
   const [scottyLayout, setScottyLayout] = useState<{
     x: number;
@@ -302,18 +292,39 @@ export default function ScottyHomeScreen({
   // Heart burst state
   const [heartBurst, setHeartBurst] = useState<{ x: number; y: number } | null>(null);
 
-  // Happiness bar animated width
-  const happinessWidth = useSharedValue(0);
-  const happinessPercent = Math.max(0, Math.min(100, scottyState.happiness));
+  const handleClaimReward = useCallback(() => {
+    setDemoClaimed(true);
+    // Award food credits + big happiness boost from quest reward
+    feedScotty('meal');
+    feedScotty('meal');
+    setFoodCounts((prev) => ({ ...prev, food: prev.food + 2 }));
+    // Trigger heart burst at Wynter's center
+    if (scottyLayout) {
+      setHeartBurst({
+        x: scottyLayout.x + scottyLayout.width / 2,
+        y: scottyLayout.y + scottyLayout.height / 2,
+      });
+    }
+    scottyAnimRef.current?.showLoved();
+    setTimeout(() => {
+      setShowDemoModal(false);
+      // Reset for re-demo
+      setTimeout(() => setDemoClaimed(false), 500);
+    }, 1500);
+  }, [feedScotty, scottyLayout]);
+
+  // Happiness bar animated width — use pixel-based width for web compatibility
+  const happinessFrac = useSharedValue(0);
+  const [meterWidth, setMeterWidth] = useState(0);
   React.useEffect(() => {
-    const target = Math.max(0, Math.min(100, scottyState.happiness));
-    happinessWidth.value = withDelay(
+    const target = Math.max(0, Math.min(100, scottyState.happiness)) / 100;
+    happinessFrac.value = withDelay(
       200,
       withTiming(target, { duration: 800, easing: Easing.out(Easing.cubic) })
     );
   }, [scottyState.happiness]);
   const happinessAnimStyle = useAnimatedStyle(() => ({
-    width: `${happinessWidth.value}%`,
+    width: meterWidth > 0 ? happinessFrac.value * meterWidth : 0,
   }));
 
   const measureScotty = useCallback(() => {
@@ -588,16 +599,21 @@ export default function ScottyHomeScreen({
           {/* Happiness Meter */}
           <View style={styles.happinessContainer}>
             <View style={styles.meterHeader}>
-              <Text style={styles.meterLabel}>WYNTER HAPPINESS</Text>
+              <Text style={styles.meterLabel}>WYNTER GUNTER HAPPINESS</Text>
               <Text style={styles.meterValue}>{Math.round(scottyState.happiness)}%</Text>
             </View>
-            <View style={styles.meterContainer}>
-              <AnimatedLinearGradient
-                colors={['#ff6b6b', '#9b59b6']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={[styles.meterFill, happinessAnimStyle]}
-              />
+            <View
+              style={styles.meterContainer}
+              onLayout={(e) => setMeterWidth(e.nativeEvent.layout.width)}
+            >
+              <Animated.View style={[styles.meterFillWrapper, happinessAnimStyle]}>
+                <LinearGradient
+                  colors={['#ff6b6b', '#9b59b6']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.meterFillGradient}
+                />
+              </Animated.View>
             </View>
           </View>
         </View>
@@ -808,8 +824,8 @@ export default function ScottyHomeScreen({
             <View style={styles.demoRewardSection}>
               <Text style={styles.demoRewardLabel}>REWARD EARNED</Text>
               <View style={styles.demoRewardRow}>
-                <ScottyIcon name="food_beverage" size={28} color="#000" />
-                <Text style={styles.demoRewardName}>2x Boba Treats</Text>
+                <Image source={require('../assets/images/food-boba.png')} style={styles.demoRewardImage} />
+                <Text style={styles.demoRewardName}>Churu</Text>
               </View>
               <Text style={styles.demoRewardHint}>Feed these to Wynter to boost happiness!</Text>
             </View>
@@ -1027,8 +1043,13 @@ const styles = StyleSheet.create({
     shadowRadius: 0,
     elevation: 2,
   },
-  meterFill: {
+  meterFillWrapper: {
     height: '100%',
+    borderRadius: 999,
+    overflow: 'hidden',
+  },
+  meterFillGradient: {
+    flex: 1,
     borderRadius: 999,
   },
 
@@ -1564,6 +1585,10 @@ const styles = StyleSheet.create({
   },
   demoRewardEmoji: {
     fontSize: 28,
+  },
+  demoRewardImage: {
+    width: 32,
+    height: 32,
   },
   demoRewardName: {
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',

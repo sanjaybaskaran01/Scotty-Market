@@ -42,7 +42,13 @@ export const Scotty = forwardRef<ScottyRef, ScottyProps>(({ size = 160, mood }, 
     };
   }, []);
 
-  const SvgComponent = isLoved ? LovedSvg : (mood === 'sad' ? SadSvg : IdleSvg);
+  const SvgComponent = isLoved
+    ? LovedSvg
+    : mood === 'sad'
+      ? SadSvg
+      : mood === 'happy'
+        ? LovedSvg
+        : IdleSvg;
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>

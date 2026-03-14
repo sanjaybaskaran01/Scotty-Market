@@ -120,8 +120,8 @@ export interface FeatureToggles {
 
 const DEFAULT_FEATURE_TOGGLES: FeatureToggles = {
   dailyQuests: false,
-  summaryCards: false,
-  budgetDashboard: false,
+  summaryCards: true,
+  budgetDashboard: true,
   insights: false,
 };
 
@@ -396,6 +396,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setAchievements(newAchievements);
 
     generateDailyInsight(transactions).then(setDailyInsight);
+
+    // Demo fallback data so dashboard isn't empty without backend
+    setBudgets([
+      { id: 'demo-1', category: 'Food & Drink', frequency: 'Month', limitAmount: 400, derivedDailyLimit: 400 / 30, spent: 127.50, adaptiveEnabled: false, adaptiveMaxAdjustPct: 0 },
+      { id: 'demo-2', category: 'Entertainment', frequency: 'Month', limitAmount: 150, derivedDailyLimit: 150 / 30, spent: 42.00, adaptiveEnabled: false, adaptiveMaxAdjustPct: 0 },
+      { id: 'demo-3', category: 'Shopping', frequency: 'Month', limitAmount: 200, derivedDailyLimit: 200 / 30, spent: 89.99, adaptiveEnabled: false, adaptiveMaxAdjustPct: 0 },
+    ]);
+    setDailySpend(18.75);
+    setTotalBalance(2847.63);
   }
 
 
@@ -550,7 +559,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     // Local fallback
     const cost = type === 'meal' ? 5 : 2;
-    const happinessBoost = 5;
+    const happinessBoost = type === 'meal' ? 15 : 10;
 
     if (scottyState.foodCredits < cost) return;
 

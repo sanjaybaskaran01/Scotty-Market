@@ -2,9 +2,9 @@ import React from 'react';
 import {
   View,
   Text,
-  Modal,
   StyleSheet,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   Switch,
   Platform,
 } from 'react-native';
@@ -27,59 +27,63 @@ const TOGGLES: { key: keyof FeatureToggles; label: string; icon: IconName }[] = 
 export default function WidgetPanel({ visible, onClose }: WidgetPanelProps) {
   const { featureToggles, setFeatureToggle } = useApp();
 
+  if (!visible) return null;
+
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent
-      onRequestClose={onClose}
-    >
-      <View style={styles.overlay}>
-        <View style={styles.sheet}>
-          {/* Handle */}
-          <View style={styles.handleRow}>
-            <View style={styles.handle} />
-          </View>
+    <View style={styles.overlay}>
+      {/* Tap outside to close — no dark tint */}
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.backdrop} />
+      </TouchableWithoutFeedback>
 
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.title}>WIDGETS</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <Text style={styles.closeText}>DONE</Text>
-            </TouchableOpacity>
-          </View>
-
-          <Text style={styles.subtitle}>
-            Toggle widgets to customize your home screen.
-          </Text>
-
-          {/* Toggle list */}
-          {TOGGLES.map(({ key, label, icon }) => (
-            <View key={key} style={styles.toggleRow}>
-              <View style={styles.toggleIcon}>
-                <ScottyIcon name={icon} size={20} color={Colors.ink} />
-              </View>
-              <Text style={styles.toggleLabel}>{label}</Text>
-              <Switch
-                value={featureToggles[key]}
-                onValueChange={(val) => setFeatureToggle(key, val)}
-                trackColor={{ false: '#ddd', true: Colors.coral }}
-                thumbColor={Colors.white}
-                ios_backgroundColor="#ddd"
-              />
-            </View>
-          ))}
+      <View style={styles.sheet}>
+        {/* Handle */}
+        <View style={styles.handleRow}>
+          <View style={styles.handle} />
         </View>
+
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>WIDGETS</Text>
+          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+            <Text style={styles.closeText}>DONE</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.subtitle}>
+          Toggle widgets to customize your home screen.
+        </Text>
+
+        {/* Toggle list */}
+        {TOGGLES.map(({ key, label, icon }) => (
+          <View key={key} style={styles.toggleRow}>
+            <View style={styles.toggleIcon}>
+              <ScottyIcon name={icon} size={20} color={Colors.ink} />
+            </View>
+            <Text style={styles.toggleLabel}>{label}</Text>
+            <Switch
+              value={featureToggles[key]}
+              onValueChange={(val) => setFeatureToggle(key, val)}
+              trackColor={{ false: '#ddd', true: Colors.coral }}
+              thumbColor={Colors.white}
+              ios_backgroundColor="#ddd"
+            />
+          </View>
+        ))}
       </View>
-    </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   overlay: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 999,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'transparent',
   },
   sheet: {
     backgroundColor: Colors.paper,
@@ -91,6 +95,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.ink,
     paddingBottom: 40,
     paddingHorizontal: 24,
+    ...Shadows.sketch,
   },
   handleRow: {
     alignItems: 'center',
