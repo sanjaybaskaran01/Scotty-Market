@@ -1,0 +1,58 @@
+[
+  {
+    "id": "demo_ins_1",
+    "title": "Great Grocery Week!",
+    "blurb": "You spent 18% less on groceries this week compared to your monthly average. Keep it up — that's $14 saved!",
+    "confidence": "HIGH",
+    "type": "positive"
+  },
+  {
+    "id": "demo_ins_2",
+    "title": "Subscription Alert",
+    "blurb": "You have 3 active subscriptions totaling $45.98/month. Consider reviewing Netflix if you haven't watched recently.",
+    "confidence": "MEDIUM",
+    "type": "neutral"
+  },
+  {
+    "id": "demo_ins_3",
+    "title": "Dining Out Trending Up",
+    "blurb": "Dining out expenses are 22% higher this week. Cooking at home twice could save you ~$25.",
+    "confidence": "MEDIUM",
+    "type": "warning"
+  },
+  {
+    "id": "demo_ins_4",
+    "title": "Savings Streak!",
+    "blurb": "You've stayed under budget in Transportation for 3 weeks straight. Wynter is proud of you!",
+    "confidence": "HIGH",
+    "type": "positive"
+  },
+  {
+    "id": "demo_ins_5",
+    "title": "Weekend Splurge Detected",
+    "blurb": "Weekends account for 43% of your spending despite only being 2/7 days. Try planning weekend activities with a set budget.",
+    "confidence": "MEDIUM",
+    "type": "warning"
+  },
+  {
+    "id": "demo_ins_6",
+    "title": "On Track for Emergency Fund",
+    "blurb": "At your current savings rate, you'll hit $5,000 in your emergency fund in about 3 months. Great progress!",
+    "confidence": "HIGH",
+    "type": "positive"
+  },
+  {
+    "id": "demo_ins_7",
+    "title": "Coffee Habit Cost",
+    "blurb": "Your daily coffee purchases average $5.75/day — about $172/month. Brewing at home 3 days a week could save $60/month.",
+    "confidence": "HIGH",
+    "type": "neutral"
+  },
+  {
+    "id": "demo_ins_8",
+    "title": "Paycheck Timing Tip",
+    "blurb": "You tend to spend 35% more in the 3 days after payday. Setting a payday budget limit could help smooth spending.",
+    "confidence": "MEDIUM",
+    "type": "neutral"
+  }
+]
